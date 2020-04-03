@@ -25,7 +25,9 @@ let proxyClient; // a reference to the client that is the actual minecraft game
 let client; // the client to connect to 2b2t
 let server; // the minecraft server to pass packets
 let antiafkIntervalObj; // self explanatory
+var currentSession; //Let's save the session to avoid re-authing every time we try to reconnect.
 var chunk = [];
+var lastPos;
 // function to disconnect from the server
 function stop(){
 	webserver.isInQueue = false;
@@ -41,6 +43,14 @@ function stop(){
 function sendAntiafkMessage(client) {
 	filterPacketAndSend({ message: "{\"text\":\">\"}", position: 1 }, { name: "chat" }, client);
 }
+function reconnect(){
+	console.log('Trying to reconnect');
+	if (proxyClient) {
+		proxyClient.end("Stopped the proxy."); // boot the player from the server
+	}
+	server.close(); // close the server
+	startQueuing()
+}
 
 // function to start the whole thing
 function startQueuing() {
@@ -53,6 +63,11 @@ function startQueuing() {
 		version: config.MCversion
 	});
 	let finishedQueue = false;
+	client.on('session', ses =>{
+		currentSession=ses;
+		//console.log('session set',ses);
+	});
+	chunk = []; //let's reset the saved chunkdata when we start queuing.
 	client.on("packet", (data, meta) => { // each time 2b2t sends a packet
 		if (!finishedQueue && meta.name === "playerlist_header") { // if the packet contains the player list, we can use it to see our place in the queue
 			let headermessage = JSON.parse(data.header);
@@ -63,15 +78,22 @@ function startQueuing() {
 			server.motd = `Place in queue: ${positioninqueue}`; // set the MOTD because why not
 		}
 		if (meta.name === "map_chunk") {
-			chunk.push([data, meta]);
+			chunk.push([data, meta, data.x,data.z]);
+		}
+		if (meta.name === "position") {
+			lastPos=data;
+		}
+		if (meta.name ==="unload_chunk") {
+			chunk = chunk.filter(function(element){
+					return !(element[2]=== data.chunkX && element[3]=== data.chunkZ);
+				})
 		}
 		if (finishedQueue === false && meta.name === "chat") { // we can know if we're about to finish the queue by reading the chat message
 			// we need to know if we finished the queue otherwise we crash when we're done, because the queue info is no longer in packets the server sends us.
 			let chatMessage = JSON.parse(data.message);
 			if (chatMessage.text && chatMessage.text === "Connecting to the server...") {
                 if (webserver.restartQueue && proxyClient == null) { // ifwe should restart
-                    stop();
-                    setTimeout(startQueuing, 100); // reconnect after 100 ms
+                    client.end()                   
                 } else {
                     finishedQueue = true;
                     webserver.queuePlace = "FINISHED";
@@ -97,22 +119,12 @@ function startQueuing() {
 	
 	// set up actions in case we get disconnected.
 	client.on('end', () => {
-		if (proxyClient) {
-            proxyClient.end("Connection reset by 2b2t server.\nReconnecting...");
-            proxyClient = null
-		}
-		stop();
-		setTimeout(startQueuing, 100); // reconnect after 100 ms
+		setTimeout(reconnect, 100); // reconnect after 100 ms
+		console.log('end', err);
 	});
 
 	client.on('error', (err) => {
-		if (proxyClient) {
-            proxyClient.end(`Connection error by 2b2t server.\n Error message: ${err}\nReconnecting...`);
-            proxyClient = null
-		}
-		console.log('err', err);
-		stop();
-		setTimeout(startQueuing, 100); // reconnect after 100 ms
+		client.end();
 	});
 
 	server = mc.createServer({ // create a server for us to connect to
@@ -135,6 +147,10 @@ function startQueuing() {
 			reducedDebugInfo: false
 		});
 		
+		if (lastPos){
+			newProxyClient.write('position', lastPos);
+			console.log("Writing lastPos to client");
+		}else{
 		newProxyClient.write('position', {
 			x: 0,
 			y: 1.62,
@@ -142,7 +158,13 @@ function startQueuing() {
 			yaw: 0,
 			pitch: 0,
 			flags: 0x00
-		});
+		})};
+		if(chunk.length >= 1) {
+			chunk.forEach(function(element) {  
+				filterPacketAndSend(element[0], element[1], newProxyClient);			
+			});
+			filterPacketAndSend({ message: "{\"text\":\"2b2w: Sent:" + chunk.length + " chunks to the client on connect\"}", position: 1 }, { name: "chat" }, newProxyClient);
+		};
 		
 		
 		newProxyClient.on('packet', (data, meta) => { // redirect everything we do to 2b2t (except internal commands)
@@ -150,7 +172,7 @@ function startQueuing() {
 				let chatMessage = data.message;
 				if (chatMessage.startsWith("/2b2w")) {
 					if (chatMessage.startsWith("/2b2w chunks")) {
-						if(chunk.sizeof >= 1) {
+						if(chunk.length >= 1) {
 							chunk.forEach(function(element) {  
 								filterPacketAndSend(element[0], element[1], newProxyClient);
 								filterPacketAndSend({ message: "{\"text\":\"2b2w: okily-dokily\"}", position: 1 }, { name: "chat" }, proxyClient);
@@ -161,8 +183,16 @@ function startQueuing() {
 					} else if (chatMessage.startsWith("/2b2w forcefinishedqueue")) {
 						finishedQueue = true;
 						filterPacketAndSend({ message: "{\"text\":\"2b2w: done\"}", position: 1 }, { name: "chat" }, proxyClient);
-					} else {
-						filterPacketAndSend({ message: "{\"text\":\"2b2w commands: chunks, forcefinishedqueue\"}", position: 1 }, { name: "chat" }, proxyClient);
+					}else if (chatMessage.startsWith("/2b2w clearchunks")) {
+						chunk = [];
+						filterPacketAndSend({ message: "{\"text\":\"2b2w: cleared chunk cache\"}", position: 1 }, { name: "chat" }, proxyClient);
+					} else if (chatMessage.startsWith("/2b2w reconnect")) {						
+						filterPacketAndSend({ message: "{\"text\":\"2b2w: reconnecting\"}", position: 1 }, { name: "chat" }, proxyClient);
+						client.end(); // disconnect
+						
+					}					
+					else {
+						filterPacketAndSend({ message: "{\"text\":\"2b2w commands: chunks, clearchunks, forcefinishedqueue, reconnect\"}", position: 1 }, { name: "chat" }, proxyClient);
 					}
 				} else {
 					filterPacketAndSend(data, meta, client);	
@@ -183,3 +213,4 @@ function filterPacketAndSend(data, meta, dest) {
 		dest.write(meta.name, data);
 	}
 }
+startQueuing(); //Let's start instantly
