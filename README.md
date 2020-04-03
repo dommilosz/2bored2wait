@@ -50,3 +50,4 @@ soon
 - Sends saved chunks to client on connecting
 - Saves session betweens reconnects to avoid spamming the auth servers (Before it could lead to IP block by Cloudflare for example)
 - Sends last known position to client on connect so we don't end up floating at 0,0 away from our loaded chunks.
+- Possible to ride entities.
