@@ -123,7 +123,7 @@ function startQueuing() {
 	});
 	
 	// set up actions in case we get disconnected.
-	client.on('end', () => {
+	client.on('end', (err) => {
 		setTimeout(reconnect, 100); // reconnect after 100 ms
 		console.log('end', err);
 	});
