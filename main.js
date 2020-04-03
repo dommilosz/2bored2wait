@@ -60,7 +60,8 @@ function startQueuing() {
 		port: config.debug.serverport,
 		username: secrets.username,
 		password: secrets.password,
-		version: config.MCversion
+		version: config.MCversion,
+		session: currentSession
 	});
 	let finishedQueue = false;
 	client.on('session', ses =>{
