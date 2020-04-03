@@ -28,22 +28,13 @@ A proxy to wait out 2b2t.org's way too long queue.
 4. Leave your `screen` session with Ctrl-a Ctrl-d. Execute `ip a` to show your IP address. You may want to set up port forwarding to access your host from the Internet.
 5. Open a browser on a device that can reach your host and type &lt;your-IP&gt;:8080 in the address bar, to show the web interface.
 6. Enter your password and press the "Start queing" button. The queue position indicator auto-updates, but sometimes it takes a while to start counting (like 1 min).
-7. once the queue reaches a low number, connect to the minecraft server at your IP address. Currently, you have to connect BEFORE reaching the end of the queue.
-8. To disconnect without having to requeue afterwards, just Disconnect from the game's pause menu.
-9. Reconnecting: reconnect to your IP address (with your MC client) and <del>hit F3+A to reload chunks. This is important. Otherwise </del> you will only see black. I don't know how to fix this. Somehow we have to force 2b2t to send us chunks again or something. I know that kiIIing yourself (!!! in game obviously !!!) and respawning will resend the chunks...
-10. Disconnecting from 2b2t (you will have to requeue for your next connect) (I don't see the point in doing that). Use the Stop Queueing button in the web interface.
-
-# Video guide
-soon
 
 # Known issues
 - starting the queue will revoke your minecraft token. this means that you will not be able to join normal minecraft servers until you restart the game
-- starting the queue too many times in a row can sometimes boot you out of your minecraft account (starting the queue or connecting in the minecraft client will tell you "wrong email or password"). to fix this, log in to your account at minecraft.net, then restart minecraft. both of these issues are limitations put in place by mojang to prevent account stealing, and are not fixable.
-- Some people report not being able to ride animals using this proxy.
 - 2b2t sometimes bugs out and removes you from the queue without telling you. In this case, your queue position will no longer move. Reconnect to fix this.
 
 # Features added by `sijanec`'s fork
-- antiafk: every 50 seconds, if `proxyClient` is not connected and `finishedQueue` is `true`, `/r RusherB0t !que` will be sent as a `chat` to 2b2t to prevent getting AfkKicked. That way you can stay online forever.
+- antiafk: every 50 seconds, if `proxyClient` is not connected and `finishedQueue` is `true`, `a message` will be sent as a `chat` to 2b2t to prevent getting AfkKicked. That way you can stay online forever. (Not tested by Hazzal)
 - Caching chunks
 # Features added by `Hazzal`'s fork
 - Removing chunks from the cache as we unload them.
