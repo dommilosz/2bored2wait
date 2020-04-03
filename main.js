@@ -54,6 +54,7 @@ function reconnect(){
 
 // function to start the whole thing
 function startQueuing() {
+	var playerId;
 	webserver.isInQueue = true;
 	client = mc.createClient({ // connect to 2b2t
 		host: config.debug.serverip,
@@ -88,6 +89,9 @@ function startQueuing() {
 			chunk = chunk.filter(function(element){
 					return !(element[2]=== data.chunkX && element[3]=== data.chunkZ);
 				})
+		}
+		if(meta.name=="login"){
+			playerId=data.entityId;			
 		}
 		if (finishedQueue === false && meta.name === "chat") { // we can know if we're about to finish the queue by reading the chat message
 			// we need to know if we finished the queue otherwise we crash when we're done, because the queue info is no longer in packets the server sends us.
@@ -139,7 +143,7 @@ function startQueuing() {
 
 	server.on('login', (newProxyClient) => { // handle login
 		newProxyClient.write('login', {
-			entityId: newProxyClient.id,
+			entityId: playerId,
 			levelType: 'default',
 			gameMode: 0,
 			dimension: 0,
