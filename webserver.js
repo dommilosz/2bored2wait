@@ -16,7 +16,8 @@ module.exports = {
             } else if (module.exports.password == "" || req.headers.xpassword == module.exports.password) { //before doing any action, test if the provided password is correct.
                 if(req.url === "/update") { //API endpoint to get position, ETA, and status in JSON format      
                     res.writeHead(200, {'Content-type': 'text/json'});
-                    res.write("{\"username\": \""+ module.exports.username +"\",\"place\": \""+ module.exports.queuePlace +"\",\"ETA\": \""+ module.exports.ETA +"\", \"inQueue\": " + module.exports.isInQueue+", \"restartQueue\":"+ module.exports.restartQueue+"}")
+                    var ts = Math.round((new Date()).getTime() / 100);
+                    res.write("{\"username\": \""+ module.exports.username +"\",\"place\": \""+ module.exports.queuePlace +"\",\"ETA\": \""+ module.exports.ETA +"\", \"inQueue\": " + module.exports.isInQueue+", \"restartQueue\":"+ module.exports.restartQueue+", \"clientConnected\":"+ module.exports.ClientConnected+", \"lastpacket\":"+ (ts-module.exports.lastpacket)+"}");
                     res.end();
                 } else if(req.url === "/start") { //API endpoint to start queuing
                     res.writeHead(200);
@@ -50,6 +51,8 @@ module.exports = {
     onstartcallback: null, //a save of the action to start
     onstopcallback: null, //same but to stop
     restartQueue: false, //when at the end of the queue, restart if no client is connected?
-    password: "" //the password to use for the webapp
+    password: "", //the password to use for the webapp
+    clientConnected: false,
+    lastpacket: 0
 };
 
