@@ -66,6 +66,7 @@ function reconnect() {
 
 // function to start the whole thing
 function startQueuing() {
+	webserver.username = secrets.username;
 	webserver.clientConnected = false;
 	var playerId;
 	webserver.isInQueue = true;

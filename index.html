@@ -5,8 +5,8 @@
     </head>
     <body>
         <div class="content">
-			
-			<h1>Connected: <div class="cconnected">false</div> </h1><br>
+			<h1>Username: <div class="username">None</div> </h1>
+			<h1>Client Connected: <div class="cconnected">false</div> </h1><br>
 			
 			<h1>Last Packet: <div class="lpacket">0s</div> </h1>
             <h1>Place in queue: <div class="place">None</div> </h1>
@@ -27,11 +27,17 @@
                         document.getElementsByClassName("place")[0].innerHTML = response.place;
                         document.getElementsByClassName("ETA")[0].innerHTML = response.ETA;
                         document.getElementsByClassName("cconnected")[0].innerHTML = response.clientConnected;
+                        document.getElementsByClassName("username")[0].innerHTML = response.username;
 						
                         document.getElementsByClassName("restartQueue")[0].checked = response.restartQueue
 						document.title = '2B2W ('+document.getElementsByClassName("place")[0].innerHTML+' - '+document.getElementsByClassName("ETA")[0].innerHTML+')';
 						
-						document.getElementsByClassName("lpacket")[0].innerHTML = (response.lastpacket/10)+"s";
+                        document.getElementsByClassName("lpacket")[0].innerHTML = (response.lastpacket/10)+"s";
+                        if(response.lastpacket>50){
+                            document.getElementsByClassName("lpacket")[0].style.color = "yellow";
+                        }else{
+                            document.getElementsByClassName("lpacket")[0].style.color = "";
+                        }
 						
                         const queueButton = document.getElementById('queueButton');
                         if(response.inQueue){

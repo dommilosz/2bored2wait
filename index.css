@@ -35,6 +35,6 @@ button.stop {
     border: 2px solid #f32727;
 }
 
-.place, .ETA, .cconnected, .lpacket{
+.place, .ETA, .cconnected, .lpacket, .username{
     display: inline-block;
 }
