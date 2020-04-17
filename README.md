@@ -42,3 +42,7 @@ A proxy to wait out 2b2t.org's way too long queue.
 - Saves session betweens reconnects to avoid spamming the auth servers (Before it could lead to IP block by Cloudflare for example)
 - Sends last known position to client on connect so we don't end up floating at 0,0 away from our loaded chunks.
 - Possible to ride entities.
+# Features added by `dommilosz`'s fork
+- auto respawn with antiafk: every 50 secounds it also sends respawn packet to ensure that when you join proxy you are alive and server won't kick you
+- Web UI changed: added "Last packet label", "Is client connected", reorganised existing elements and confirm box when you click stop queuing
+- New command /2b2w antiafk: sends antiafk packet on demand (with respawn packet)
