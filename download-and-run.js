@@ -23,7 +23,7 @@ options.filename = f4;
 download(url + f4, options);
 options.filename = f5;
 download(url + f5, options);
-
+console.log("Downloaded");
 
 var script;
 function loadScript() {
@@ -36,5 +36,13 @@ function loadScript() {
 
   script = require(file);
 }
+setTimeout(function(){
+  try{
+    console.log("Trying to run app");
+    loadScript();
+    console.log("Succes");
+    console.log("");
+  }catch{}
+},1000)
 
-loadScript();
+
