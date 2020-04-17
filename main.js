@@ -136,17 +136,6 @@ function startQueuing() {
 				}
 			}
 
-			if (proxyClient) {
-				webserver.ClientConnected = true;
-				// if we are connected to the proxy, forward the packet we recieved to our game.
-				filterPacketAndSend(data, meta, proxyClient);
-				if (antiafkIntervalObj != null) {
-					clearInterval(antiafkIntervalObj);
-					antiafkIntervalObj = null;
-				}
-				
-			}
-
 			if (!proxyClient || proxyClient.ended) {
 				webserver.ClientConnected = false;
 				if (antiafkIntervalObj == null) {
@@ -156,10 +145,19 @@ function startQueuing() {
 						client
 					);
 				} // else timer already exists / is running. to prevent infinite timers being started...
+			} else {
+				webserver.ClientConnected = true;
+				// if we are connected to the proxy, forward the packet we recieved to our game.
+				filterPacketAndSend(data, meta, proxyClient);
+				if (antiafkIntervalObj != null) {
+					clearInterval(antiafkIntervalObj);
+					antiafkIntervalObj = null;
+				}
 			}
-			var ts = Math.round((new Date()).getTime() / 100);
+			var ts = Math.round(new Date().getTime() / 100);
 			webserver.lastpacket = ts;
 		} catch (error) {
+			console.log(error);
 			setTimeout(reconnect, 100);
 		}
 	});
@@ -288,11 +286,22 @@ function startQueuing() {
 							proxyClient
 						);
 						client.end(); // disconnect
+					} else if (chatMessage.startsWith("/2b2w antiafk")) {
+						filterPacketAndSend(
+							{
+								message:
+									'{"text":"Sending antiafk packet"}',
+								position: 1,
+							},
+							{ name: "chat" },
+							proxyClient
+						);
+						sendAntiafkMessage(client);
 					} else {
 						filterPacketAndSend(
 							{
 								message:
-									'{"text":"2b2w commands: chunks, clearchunks, forcefinishedqueue, reconnect"}',
+									'{"text":"2b2w commands: chunks, clearchunks, forcefinishedqueue, reconnect, antiafk"}',
 								position: 1,
 							},
 							{ name: "chat" },
