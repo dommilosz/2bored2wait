@@ -17,7 +17,6 @@ module.exports = {
                 if(req.url === "/update") { //API endpoint to get position, ETA, and status in JSON format      
                     res.writeHead(200, {'Content-type': 'text/json'});
                     var ts = Math.round((new Date()).getTime() / 100);
-                    if(!clientConnected)clientConnected=false;
                     res.write("{\"username\": \""+ module.exports.username +"\",\"place\": \""+ module.exports.queuePlace +"\",\"ETA\": \""+ module.exports.ETA +"\", \"inQueue\": " + module.exports.isInQueue+", \"restartQueue\":"+ module.exports.restartQueue+", \"clientConnected\":"+ module.exports.clientConnected+", \"lastpacket\":"+ (ts-module.exports.lastpacket)+"}");
                     res.end();
                 } else if(req.url === "/start") { //API endpoint to start queuing
