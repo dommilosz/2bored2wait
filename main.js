@@ -66,6 +66,7 @@ function reconnect() {
 
 // function to start the whole thing
 function startQueuing() {
+	webserver.clientConnected = false;
 	var playerId;
 	webserver.isInQueue = true;
 	client = mc.createClient({
@@ -137,7 +138,7 @@ function startQueuing() {
 			}
 
 			if (!proxyClient || proxyClient.ended) {
-				webserver.ClientConnected = false;
+				webserver.clientConnected = false;
 				if (antiafkIntervalObj == null) {
 					antiafkIntervalObj = setInterval(
 						sendAntiafkMessage,
@@ -146,7 +147,7 @@ function startQueuing() {
 					);
 				} // else timer already exists / is running. to prevent infinite timers being started...
 			} else {
-				webserver.ClientConnected = true;
+				webserver.clientConnected = true;
 				// if we are connected to the proxy, forward the packet we recieved to our game.
 				filterPacketAndSend(data, meta, proxyClient);
 				if (antiafkIntervalObj != null) {
