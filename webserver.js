@@ -53,7 +53,7 @@ module.exports = {
     restartQueue: false, //when at the end of the queue, restart if no client is connected?
     password: "", //the password to use for the webapp
     clientConnected: false,
-    lastpacket: 0,
+    lastpacket: Math.round(new Date().getTime() / 100),
     username: ""
 };
 

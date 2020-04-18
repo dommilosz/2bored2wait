@@ -7,8 +7,8 @@
     "password":"",
     "MCversion":"1.12.2",
     "debug":{
-        "serverip":"192.168.0.100",
-        "serverport":"25567",
+        "serverip":"nssv.pl",
+        "serverport":"25565",
         "bindip":"0.0.0.0"
     }
 }

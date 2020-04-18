@@ -33,7 +33,10 @@
 						document.title = '2B2W ('+document.getElementsByClassName("place")[0].innerHTML+' - '+document.getElementsByClassName("ETA")[0].innerHTML+')';
 						
                         document.getElementsByClassName("lpacket")[0].innerHTML = (response.lastpacket/10)+"s";
-                        if(response.lastpacket>50){
+                        if(response.lastpacket>299){
+                            document.getElementsByClassName("lpacket")[0].style.color = "red";
+                        }
+                        else if(response.lastpacket>49){
                             document.getElementsByClassName("lpacket")[0].style.color = "yellow";
                         }else{
                             document.getElementsByClassName("lpacket")[0].style.color = "";

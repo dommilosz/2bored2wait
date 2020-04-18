@@ -24,6 +24,7 @@ let proxyClient; // a reference to the client that is the actual minecraft game
 let client; // the client to connect to 2b2t
 let server; // the minecraft server to pass packets
 let antiafkIntervalObj; // self explanatory
+let reconnectIntervalObj; // self explanatory
 var currentSession; //Let's save the session to avoid re-authing every time we try to reconnect.
 var chunk = [];
 var lastPos;
@@ -47,6 +48,11 @@ function sendAntiafkMessage(client) {
 		client
 	);
 	console.log("antiafk-chat");
+	var ts = Math.round(new Date().getTime() / 100);
+	if((ts-webserver.lastpacket)>299){
+		console.log("Timed Out");
+		QueueReconnect();
+	}
 }
 function sendRespawnMsg(client) {
 	filterPacketAndSend(
@@ -62,6 +68,12 @@ function reconnect() {
 	}
 	server.close(); // close the server
 	startQueuing();
+}
+function QueueReconnect() {
+	clearInterval(reconnectIntervalObj);
+	reconnectIntervalObj = null;
+
+	reconnectIntervalObj = setTimeout(reconnect, 100); // reconnect after 100 ms
 }
 
 // function to start the whole thing
@@ -101,7 +113,7 @@ function startQueuing() {
 					server.motd = `Place in queue: ${positioninqueue}`; // set the MOTD because why not
 				}
 			} catch {
-				setTimeout(reconnect, 100);
+				//QueueReconnect();
 			}
 			if (meta.name === "map_chunk") {
 				chunk.push([data, meta, data.x, data.z]);
@@ -139,6 +151,7 @@ function startQueuing() {
 			}
 
 			if (!proxyClient || proxyClient.ended) {
+				if(webserver.clientConnected) console.log("Client Disconnected");
 				webserver.clientConnected = false;
 				if (antiafkIntervalObj == null) {
 					antiafkIntervalObj = setInterval(
@@ -160,17 +173,18 @@ function startQueuing() {
 			webserver.lastpacket = ts;
 		} catch (error) {
 			console.log(error);
-			setTimeout(reconnect, 100);
+			QueueReconnect();
 		}
 	});
 	// set up actions in case we get disconnected.
 	client.on("end", (err) => {
-		setTimeout(reconnect, 100); // reconnect after 100 ms
 		console.log("end", err);
+		QueueReconnect();
 	});
 
 	client.on("error", (err) => {
-		client.end();
+		console.log("error", err);
+		QueueReconnect();
 	});
 
 	server = mc.createServer({
@@ -291,8 +305,7 @@ function startQueuing() {
 					} else if (chatMessage.startsWith("/2b2w antiafk")) {
 						filterPacketAndSend(
 							{
-								message:
-									'{"text":"Sending antiafk packet"}',
+								message: '{"text":"Sending antiafk packet"}',
 								position: 1,
 							},
 							{ name: "chat" },
