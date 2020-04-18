@@ -7,7 +7,7 @@
     "password":"",
     "MCversion":"1.12.2",
     "debug":{
-        "serverip":"nssv.pl",
+        "serverip":"StoneForge.minehut.gg",
         "serverport":"25565",
         "bindip":"0.0.0.0"
     }

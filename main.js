@@ -19,6 +19,13 @@ if (config.openBrowserOnStart) {
 	opn("http://localhost:" + config.ports.web); //open a browser window
 }
 
+var StartArgs = process.argv.slice(2);
+console.log('StartArgs: ', StartArgs);
+setInterval(
+	checkTimeout,
+	1000
+);
+
 // lets
 let proxyClient; // a reference to the client that is the actual minecraft game
 let client; // the client to connect to 2b2t
@@ -48,11 +55,6 @@ function sendAntiafkMessage(client) {
 		client
 	);
 	console.log("antiafk-chat");
-	var ts = Math.round(new Date().getTime() / 100);
-	if((ts-webserver.lastpacket)>299){
-		console.log("Timed Out");
-		QueueReconnect();
-	}
 }
 function sendRespawnMsg(client) {
 	filterPacketAndSend(
@@ -60,6 +62,13 @@ function sendRespawnMsg(client) {
 		{ name: "client_command" },
 		client
 	);
+}
+function checkTimeout(){
+	var ts = Math.round(new Date().getTime() / 100);
+	if((ts-webserver.lastpacket)>299){
+		console.log("Timed Out");
+		QueueReconnect();
+	}
 }
 function reconnect() {
 	console.log("Trying to reconnect");
@@ -99,6 +108,7 @@ function startQueuing() {
 	chunk = []; //let's reset the saved chunkdata when we start queuing.
 	client.on("packet", (data, meta) => {
 		// each time 2b2t sends a packet
+		if(StartArgs.includes("prot-in"))console.log(meta,data, "<-IN--");
 		try {
 			try {
 				if (!finishedQueue && meta.name === "playerlist_header") {
@@ -241,6 +251,7 @@ function startQueuing() {
 
 		newProxyClient.on("packet", (data, meta) => {
 			// redirect everything we do to 2b2t (except internal commands)
+			if(StartArgs.includes("prot-out"))console.log(meta,data, "-OUT->");
 			if (meta.name === "chat") {
 				let chatMessage = data.message;
 				if (chatMessage.startsWith("/2b2w")) {
