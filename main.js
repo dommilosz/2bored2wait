@@ -110,6 +110,11 @@ function startQueuing() {
 		// each time 2b2t sends a packet
 		if(StartArgs.includes("prot-in"))console.log(meta,data, "<-IN--");
 		try {
+			if(meta.name==="position"){
+				webserver.position.x = data.x;
+				webserver.position.y = data.y;
+				webserver.position.z = data.z;
+			}
 			try {
 				if (!finishedQueue && meta.name === "playerlist_header") {
 					// if the packet contains the player list, we can use it to see our place in the queue
@@ -252,6 +257,11 @@ function startQueuing() {
 		newProxyClient.on("packet", (data, meta) => {
 			// redirect everything we do to 2b2t (except internal commands)
 			if(StartArgs.includes("prot-out"))console.log(meta,data, "-OUT->");
+			if(meta.name==="position"){
+				webserver.position.x = data.x;
+				webserver.position.y = data.y;
+				webserver.position.z = data.z;
+			}
 			if (meta.name === "chat") {
 				let chatMessage = data.message;
 				if (chatMessage.startsWith("/2b2w")) {

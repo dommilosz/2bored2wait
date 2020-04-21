@@ -17,7 +17,7 @@ module.exports = {
                 if(req.url === "/update") { //API endpoint to get position, ETA, and status in JSON format      
                     res.writeHead(200, {'Content-type': 'text/json'});
                     var ts = Math.round((new Date()).getTime() / 100);
-                    res.write("{\"username\": \""+ module.exports.username +"\",\"place\": \""+ module.exports.queuePlace +"\",\"ETA\": \""+ module.exports.ETA +"\", \"inQueue\": " + module.exports.isInQueue+", \"restartQueue\":"+ module.exports.restartQueue+", \"clientConnected\":"+ module.exports.clientConnected+", \"lastpacket\":"+ (ts-module.exports.lastpacket)+"}");
+                    res.write("{\"username\": \""+ module.exports.username +"\",\"place\": \""+ module.exports.queuePlace +"\",\"ETA\": \""+ module.exports.ETA +"\", \"inQueue\": " + module.exports.isInQueue+", \"restartQueue\":"+ module.exports.restartQueue+", \"clientConnected\":"+ module.exports.clientConnected+", \"lastpacket\":"+ (ts-module.exports.lastpacket)+", \"position\":"+ "{"+"\"x\":\""+Math.round( module.exports.position.x*10)/10+"\","+"\"y\":\""+Math.round( module.exports.position.y*10)/10+"\","+"\"z\":\""+Math.round( module.exports.position.z*10)/10+"\""+"}"+"}");
                     res.end();
                 } else if(req.url === "/start") { //API endpoint to start queuing
                     res.writeHead(200);
@@ -54,6 +54,11 @@ module.exports = {
     password: "", //the password to use for the webapp
     clientConnected: false,
     lastpacket: Math.round(new Date().getTime() / 100),
-    username: ""
+    username: "",
+    position:{
+        x:0,
+        y:0,
+        z:0
+    }
 };
 

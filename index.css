@@ -35,6 +35,14 @@ button.stop {
     border: 2px solid #f32727;
 }
 
-.place, .ETA, .cconnected, .lpacket, .username{
+.place, .ETA, .cconnected, .lpacket, .username, .posx, .posy,.posz{
     display: inline-block;
+}
+
+.position{
+	right:0;
+	bottom:0;
+	position:fixed;
+	color: rgb(228, 228, 228);
+    font-family: sans-serif;
 }

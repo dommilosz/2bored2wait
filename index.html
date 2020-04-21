@@ -15,7 +15,9 @@
 			<button id="queueButton" class="start" onclick="start()">Start queuing</button><br><br>
             Password (set in <code>config.json</code>) : <input type="password" class="password"><br>
             <input type="checkbox" class="restartQueue" onchange="toggleRestartQueue()"> Restart the queue if you're not connected at the end of it?
+            
         </div>
+        <div class="position"><div class="posx">X: 0&nbsp;&nbsp;</div><div class="posy">Y: 0&nbsp;&nbsp;</div><div class="posz">Z: 0&nbsp;&nbsp;</div></div>
         <script>
             setInterval(() => { //each second, update the info.
 				
@@ -41,7 +43,15 @@
                         }else{
                             document.getElementsByClassName("lpacket")[0].style.color = "";
                         }
-						
+                        
+                        posx = response.position.x;
+                        posy = response.position.y;
+                        posz = response.position.z;
+
+                        document.getElementsByClassName("posx")[0].innerHTML = "X:&nbsp;"+posx+"&nbsp;&nbsp;";
+                        document.getElementsByClassName("posy")[0].innerHTML = "Y:&nbsp;"+posy+"&nbsp;&nbsp;";
+                        document.getElementsByClassName("posz")[0].innerHTML = "Z:&nbsp;"+posz+"&nbsp;&nbsp;";
+
                         const queueButton = document.getElementById('queueButton');
                         if(response.inQueue){
                             queueButton.innerHTML = "Stop queuing";
