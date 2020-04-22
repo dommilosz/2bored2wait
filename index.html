@@ -1,114 +1,185 @@
 <html>
-    <head>
-        <title>2Bored2Wait</title>
-        <link rel="stylesheet" href="index.css">
-    </head>
-    <body>
-        <div class="content">
-			<h1>Username: <div class="username">None</div> </h1>
-			<h1>Client Connected: <div class="cconnected">false</div> </h1><br>
-			
-			<h1>Last Packet: <div class="lpacket">0s</div> </h1>
-            <h1>Place in queue: <div class="place">None</div> </h1>
-            <h1>ETA: <div class="ETA">None</div> </h1>
-			<br>
-			<button id="queueButton" class="start" onclick="start()">Start queuing</button><br><br>
-            Password (set in <code>config.json</code>) : <input type="password" class="password"><br>
-            <input type="checkbox" class="restartQueue" onchange="toggleRestartQueue()"> Restart the queue if you're not connected at the end of it?
-            
-        </div>
-        <div class="position"><div class="posx">X: 0&nbsp;&nbsp;</div><div class="posy">Y: 0&nbsp;&nbsp;</div><div class="posz">Z: 0&nbsp;&nbsp;</div></div>
-        <script>
-            setInterval(() => { //each second, update the info.
-				
-                const xhr = new XMLHttpRequest();
-                xhr.open("GET", "/update", true);
-                xhr.onreadystatechange = function() {
-                    if (this.readyState == 4 && this.status == 200) {
-                        const response = JSON.parse(this.responseText);
-                        document.getElementsByClassName("place")[0].innerHTML = response.place;
-                        document.getElementsByClassName("ETA")[0].innerHTML = response.ETA;
-                        document.getElementsByClassName("cconnected")[0].innerHTML = response.clientConnected;
-                        document.getElementsByClassName("username")[0].innerHTML = response.username;
-						
-                        document.getElementsByClassName("restartQueue")[0].checked = response.restartQueue
-						document.title = '2B2W ('+document.getElementsByClassName("place")[0].innerHTML+' - '+document.getElementsByClassName("ETA")[0].innerHTML+')';
-						
-                        document.getElementsByClassName("lpacket")[0].innerHTML = (response.lastpacket/10)+"s";
-                        if(response.lastpacket>299){
-                            document.getElementsByClassName("lpacket")[0].style.color = "red";
-                        }
-                        else if(response.lastpacket>49){
-                            document.getElementsByClassName("lpacket")[0].style.color = "yellow";
-                        }else{
-                            document.getElementsByClassName("lpacket")[0].style.color = "";
-                        }
-                        
-                        posx = response.position.x;
-                        posy = response.position.y;
-                        posz = response.position.z;
+	<head>
+		<title>2Bored2Wait</title>
+		<link rel="stylesheet" href="index.css" />
+	</head>
+	<body onload="SetHash()">
+		<div class="content">
+			<h1>
+				Username:
+				<div class="username">None</div>
+			</h1>
+			<h1>
+				Client Connected:
+				<div class="cconnected">false</div>
+			</h1>
+			<br />
 
-                        document.getElementsByClassName("posx")[0].innerHTML = "X:&nbsp;"+posx+"&nbsp;&nbsp;";
-                        document.getElementsByClassName("posy")[0].innerHTML = "Y:&nbsp;"+posy+"&nbsp;&nbsp;";
-                        document.getElementsByClassName("posz")[0].innerHTML = "Z:&nbsp;"+posz+"&nbsp;&nbsp;";
+			<h1>
+				Last Packet:
+				<div class="lpacket">0s</div>
+			</h1>
+			<h1>
+				Place in queue:
+				<div class="place">None</div>
+			</h1>
+			<h1>
+				ETA:
+				<div class="ETA">None</div>
+			</h1>
+			<br />
+			<button id="queueButton" class="start" onclick="start()">
+				Start queuing</button
+			><br /><br />
+			Password (set in <code>config.json</code>) :
+			<input type="password" class="password" /><br />
+			<input
+				type="checkbox"
+				class="restartQueue"
+				onchange="toggleRestartQueue()"
+			/>
+			Restart the queue if you're not connected at the end of it?
+		</div>
+		<div class="position">
+			<div class="posx">X: 0&nbsp;&nbsp;</div>
+			<div class="posy">Y: 0&nbsp;&nbsp;</div>
+			<div class="posz">Z: 0&nbsp;&nbsp;</div>
+		</div>
+		<script>
+			setInterval(() => {
+				//each second, update the info.
 
-                        const queueButton = document.getElementById('queueButton');
-                        if(response.inQueue){
-                            queueButton.innerHTML = "Stop queuing";
-                            queueButton.setAttribute('onclick', 'stop()');
-                            queueButton.className = 'stop';
-                        }else{
-                            queueButton.innerHTML = "Start queuing";
-                            queueButton.setAttribute('onclick', 'start()');
-                        queueButton.className = 'start';
-                        }
-                    }
-                }
-                xhr.setRequestHeader('XPassword', document.getElementsByClassName('password')[0].value)
-                xhr.send();
+				const xhr = new XMLHttpRequest();
+				xhr.open("GET", "/update", true);
+				xhr.onreadystatechange = function () {
+					if (this.readyState == 4 && this.status == 200) {
+						const response = JSON.parse(this.responseText);
+						document.getElementsByClassName("place")[0].innerHTML =
+							response.place;
+						document.getElementsByClassName("ETA")[0].innerHTML =
+							response.ETA;
+						document.getElementsByClassName(
+							"cconnected"
+						)[0].innerHTML = response.clientConnected;
+						document.getElementsByClassName(
+							"username"
+						)[0].innerHTML = response.username;
 
-            }, 1000);
+						document.getElementsByClassName(
+							"restartQueue"
+						)[0].checked = response.restartQueue;
+						document.title =
+							"2B2W (" +
+							document.getElementsByClassName("place")[0]
+								.innerHTML +
+							" - " +
+							document.getElementsByClassName("ETA")[0]
+								.innerHTML +
+							")";
 
-            function start() {
-                const xhr = new XMLHttpRequest();
-                xhr.open("GET", "/start", true);
-                xhr.setRequestHeader('XPassword', document.getElementsByClassName('password')[0].value)
-                xhr.send();
-                const queueButton = document.getElementById('queueButton');
-                queueButton.innerHTML = "Stop queuing";
-                queueButton.setAttribute('onclick', 'stop()');
-                queueButton.setAttribute('onclick', 'stop()');
-                queueButton.className = 'stop';
-            }
+						document.getElementsByClassName(
+							"lpacket"
+						)[0].innerHTML = response.lastpacket / 10 + "s";
+						if (response.lastpacket > 299) {
+							document.getElementsByClassName(
+								"lpacket"
+							)[0].style.color = "red";
+						} else if (response.lastpacket > 49) {
+							document.getElementsByClassName(
+								"lpacket"
+							)[0].style.color = "yellow";
+						} else {
+							document.getElementsByClassName(
+								"lpacket"
+							)[0].style.color = "";
+						}
 
-            function stop() {
-			
-				if (confirm('Are you sure you want to lose your "'+document.getElementsByClassName("place")[0].innerHTML+'" position?')) {
+						posx = response.position.x;
+						posy = response.position.y;
+						posz = response.position.z;
+
+						document.getElementsByClassName("posx")[0].innerHTML =
+							"X:&nbsp;" + posx + "&nbsp;&nbsp;";
+						document.getElementsByClassName("posy")[0].innerHTML =
+							"Y:&nbsp;" + posy + "&nbsp;&nbsp;";
+						document.getElementsByClassName("posz")[0].innerHTML =
+							"Z:&nbsp;" + posz + "&nbsp;&nbsp;";
+
+						const queueButton = document.getElementById(
+							"queueButton"
+						);
+						if (response.inQueue) {
+							queueButton.innerHTML = "Stop queuing";
+							queueButton.setAttribute("onclick", "stop()");
+							queueButton.className = "stop";
+						} else {
+							queueButton.innerHTML = "Start queuing";
+							queueButton.setAttribute("onclick", "start()");
+							queueButton.className = "start";
+						}
+					}
+				};
+				xhr.setRequestHeader("XPassword", hash);
+				xhr.send();
+			}, 1000);
+
+			function start() {
+				const xhr = new XMLHttpRequest();
+				xhr.open("GET", "/start", true);
+				xhr.setRequestHeader("XPassword", hash);
+				xhr.send();
+				const queueButton = document.getElementById("queueButton");
+				queueButton.innerHTML = "Stop queuing";
+				queueButton.setAttribute("onclick", "stop()");
+				queueButton.setAttribute("onclick", "stop()");
+				queueButton.className = "stop";
+			}
+
+			function stop() {
+				if (
+					confirm(
+						'Are you sure you want to lose your "' +
+							document.getElementsByClassName("place")[0]
+								.innerHTML +
+							'" position?'
+					)
+				) {
 					const xhr = new XMLHttpRequest();
 					xhr.open("GET", "/stop", true);
-					xhr.setRequestHeader('XPassword', document.getElementsByClassName('password')[0].value)
+					xhr.setRequestHeader(
+						"XPassword",
+						document.getElementsByClassName("password")[0].value
+					);
 					xhr.send();
-					const queueButton = document.getElementById('queueButton');
+					const queueButton = document.getElementById("queueButton");
 					queueButton.innerHTML = "Start queuing";
-					queueButton.setAttribute('onclick', 'start()');
-					queueButton.className = 'start';
-					document.getElementsByClassName("place")[0].innerHTML = 'None';
-					document.getElementsByClassName("ETA")[0].innerHTML = 'None';
-					document.title = '2Bored2Wait (NONE)';
-					console.log('Disabled :(');
+					queueButton.setAttribute("onclick", "start()");
+					queueButton.className = "start";
+					document.getElementsByClassName("place")[0].innerHTML =
+						"None";
+					document.getElementsByClassName("ETA")[0].innerHTML =
+						"None";
+					document.title = "2Bored2Wait (NONE)";
+					console.log("Disabled :(");
 				} else {
 					// Do nothing!
 				}
-                
-            }
+			}
 
-            function toggleRestartQueue(){
-                const xhr = new XMLHttpRequest();
-                xhr.open("GET", "/togglerestart", true);
-                xhr.setRequestHeader('XPassword', document.getElementsByClassName('password')[0].value)
-                xhr.send();
-            }
-
-        </script>
-    </body>
+			function toggleRestartQueue() {
+				const xhr = new XMLHttpRequest();
+				xhr.open("GET", "/togglerestart", true);
+				xhr.setRequestHeader("XPassword", hash);
+				xhr.send();
+			}
+			hash;
+			function SetHash() {
+				if (document.URL.includes("?hash=")) {
+					hash = document.URL.slice(
+						document.URL.indexOf("?hash=") + 6
+					);
+				}
+			}
+		</script>
+	</body>
 </html>

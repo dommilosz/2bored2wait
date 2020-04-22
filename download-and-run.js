@@ -1,48 +1,48 @@
-var fs = require('fs');
-var file = './main.js';
+var fs = require("fs");
+var file = "./main.js";
 var download = require("download-file");
 
 var options = {
 	directory: process.cwd(),
 	filename: "main.js",
 };
-var f1 = "main.js";
-var f2 = "webserver.js";
-var f3 = "index.html";
-var f4 = "index.css";
-var f5 = "package.json";
+
+var files = [
+	"main.js",
+	"webserver.js",
+	"index.html",
+	"index.css",
+	"package.json",
+	"login.html",
+	"download-and-run.js",
+];
+fruits.forEach(myFunction);
+
 var url = "https://raw.githubusercontent.com/dommilosz/2bored2wait/master/";
 
-options.filename = f1;
-download(url + f1, options);
-options.filename = f2;
-download(url + f2, options);
-options.filename = f3;
-download(url + f3, options);
-options.filename = f4;
-download(url + f4, options);
-options.filename = f5;
-download(url + f5, options);
+function DownloadFile(item, index) {
+	options.filename = item;
+	download(url + item, options);
+}
+
 console.log("Downloaded");
 
 var script;
 function loadScript() {
-  if (script) {
-    if (typeof script.teardown === 'function') {
-      script.teardown();
-    }
-    delete require.cache[file];
-  }
+	if (script) {
+		if (typeof script.teardown === "function") {
+			script.teardown();
+		}
+		delete require.cache[file];
+	}
 
-  script = require(file);
+	script = require(file);
 }
-setTimeout(function(){
-  try{
-    console.log("Trying to run app");
-    loadScript();
-    console.log("Succes");
-    console.log("");
-  }catch{}
-},1000)
-
-
+setTimeout(function () {
+	try {
+		console.log("Trying to run app");
+		loadScript();
+		console.log("Succes");
+		console.log("");
+	} catch {}
+}, 1000);

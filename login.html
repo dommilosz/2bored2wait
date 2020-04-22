@@ -1,0 +1,65 @@
+<html>
+<head>
+<style>
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    background-color: rgb(16, 16, 26);
+}
+
+h1, .content {
+    margin: 0;
+    color: rgb(228, 228, 228);
+    font-family: sans-serif;
+}
+</style>
+<script>
+
+function httpGet()
+{
+    
+    function httpGetAsync(theUrl)
+    {
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = function() { 
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
+            console.log(xmlHttp.readyState);
+            console.log(xmlHttp.responseText);
+        }
+    }
+    xmlHttp.open("GET", theUrl, true); // true for asynchronous 
+    xmlHttp.send(null);
+    }
+    httpGetAsync(theUrl);
+}
+function GetHash()
+	{
+        theUrl = "/auth?password="+document.getElementsByClassName("passwinp")[0].value;
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+            console.log(this.responseText);
+            window.location.href = "?hash="+this.responseText;
+		}else if(this.status!=200&&this.readyState == 4)
+		{
+            
+		}
+	};
+	xhttp.open("GET", theUrl, true);
+	xhttp.send();
+	}
+</script>
+</head>
+<body>
+<div class="content">
+<div>Enter Password (set in <code>config.json</code>) : </div>
+  <input class="passwinp" type="password" name="password">
+  <button value="Log In" onclick="GetHash()">Log In</button>
+  
+</form>
+</div>
+</body></html>
