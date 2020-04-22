@@ -16,7 +16,7 @@ var files = [
 	"login.html",
 	"download-and-run.js",
 ];
-files.forEach(myFunction);
+files.forEach(DownloadFile);
 
 var url = "https://raw.githubusercontent.com/dommilosz/2bored2wait/master/";
 
