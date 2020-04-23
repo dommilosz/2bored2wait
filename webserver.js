@@ -26,8 +26,8 @@ module.exports = {
 					res.writeHead(200, { "Content-type": "text/html" });
 					res.write(r);
 				} else {
-					res.write("WRONG PASSWORD");
 					res.writeHead(403, { "Content-type": "text/html" });
+					res.write("WRONG PASSWORD");
 				}
 				res.end();
 			} else if (url === "/index.css") {

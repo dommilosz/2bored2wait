@@ -89,7 +89,11 @@ function GetHash()
             window.location.href = "?hash="+this.responseText;
 		}else if(this.status!=200&&this.readyState == 4)
 		{
-            openmodal();
+            console.log(this.status);
+            if(this.status==403){
+            openmodal("Password that you entered is Invalid\nTry Again!");
+            }
+            else {openmodal("Something went wrong\nTry Again!");}
 		}
 	};
 	xhttp.open("GET", theUrl, true);
@@ -97,7 +101,7 @@ function GetHash()
 	}
 </script>
 </head>
-<body>
+<body onload="OnLoad()">
 <div class="content">
 <div>Enter Password (set in <code>config.json</code>) : </div>
   <input class="passwinp" id="passwinp" type="password" name="password">
@@ -109,7 +113,7 @@ function GetHash()
     <!-- Modal content -->
     <div class="modal-content">
       <span class="close">&times;</span>
-      <p>Pasword That you entered is invalid.<br>Try Again!</p>
+      <p id="modal-txt">ERROR</p>
     </div>
   
   </div>
@@ -122,8 +126,10 @@ function GetHash()
     var span = document.getElementsByClassName("close")[0];
     
     // When the user clicks the button, open the modal 
-    function openmodal(){
+    function openmodal(txt){
       modal.style.display = "block";
+      document.getElementById("modal-txt").innerHTML=txt;
+      
     }
     
     // When the user clicks on <span> (x), close the modal
@@ -136,6 +142,11 @@ function GetHash()
       if (event.target == modal) {
         modal.style.display = "none";
       }
+    }
+
+    function OnLoad(){
+        if(document.URL.includes("?hash="))
+        window.location.href = "/";
     }
     </script>
 </body></html>
